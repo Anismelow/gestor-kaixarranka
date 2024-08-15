@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Horas</title>
+    <!-- Estilos básicos para el formulario y la página -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #4CAF50;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registrar Horas de Trabajo</h1>
+
+        <!-- Mostrar mensajes de error si los hay -->
+        {% if form.errors %}
+            <div class="error">
+                <p><strong>Por favor corrige los siguientes errores:</strong></p>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Formulario para registrar las horas -->
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label for="id_fecha">Fecha:</label>
+                {{ form.fecha }}
+            </div>
+            <div>
+                <label for="id_hora_entrada">Hora de Entrada:</label>
+                {{ form.hora_entrada }}
+            </div>
+            <div>
+                <label for="id_hora_salida">Hora de Salida:</label>
+                {{ form.hora_salida }}
+            </div>
+            <div>
+                <button type="submit">Guardar</button>
+            </div>
+        </form>
+
+        <!-- Enlace para volver a la página principal -->
+        <a href="{% url 'home' %}" class="back-link">Volver a la página principal</a>
+    </div>
+</body>
+</html>
