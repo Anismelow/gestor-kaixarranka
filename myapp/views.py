@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 
 from .forms import *
@@ -86,3 +86,9 @@ def adelanto_detail(request):
     else:
         form = AdelantoForm()  # Mostrar un formulario vacío si la solicitud no es POST
     return render(request, 'adelanto/adelanto_detail.html', {'form': form})
+
+
+
+def cerrar_sesion(request):
+    logout(request)  # Cerrar la sesión del usuario
+    return redirect('login')  # Redirigir a la vista de inicio de sesión
