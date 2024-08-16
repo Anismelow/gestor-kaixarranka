@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "extends/navbar.html" %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Bienvenido, {{ request.user.username }}</h1>
+
+    <!-- Horas Trabajadas -->
+    <h2>Horas Trabajadas</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora de Entrada</th>
+                    <th>Hora de Salida</th>
+                    <th>Horas Laboradas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hora in horas %}
+                    <tr>
+                        <td>{{ hora.fecha }}</td>
+                        <td>{{ hora.hora_entrada }}</td>
+                        <td>{{ hora.hora_salida }}</td>
+                        <td>{{ hora.horas_laboradas }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">No hay horas registradas.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Adelantos -->
+    <h2>Adelantos</h2>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha de Solicitud</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ad in adelanto %}
+                    <tr>
+                        <td>{{ ad.fecha_solicitud }}</td>
+                        <td>€{{ ad.monto }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No hay adelantos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Resumen -->
+    <div class="summary mt-4">
+        <div class="alert alert-info">
+            <p><strong>Total Horas Trabajadas:</strong> {{ total_horas }} horas</p>
+            <p><strong>Total Adelantos:</strong> €{{ total_adelanto }}</p>
+            <p><strong>Total Euros por Horas:</strong> €{{ euros }}</p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

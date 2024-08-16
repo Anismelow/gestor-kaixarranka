@@ -8,20 +8,18 @@ from .models import Horas, Adelanto
 
 def inicio_sesion(request):
     if request.method == 'POST':
-        form = UsersForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-            else:
-                return render(request, 'login.html', {'form': form, 'error': 'Usuario o contraseña incorrectos'})
-    else:
-        form = UsersForm()
-    return render(request, 'login.html', {'form': form})
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # Redirige a la página de inicio o la página que desees
+        else:
+            error = "Nombre de usuario o contraseña incorrectos"
+            return render(request, 'login.html', {'error': error})
+    
+    return render(request, 'login.html')
 
 @login_required
 def view_home(request):
@@ -34,7 +32,7 @@ def view_home(request):
     total_adelanto = sum(a.monto for a in adelanto)
 
 
-    return render(request, 'home.html', {
+    return render(request, 'index.html', {
         'horas': horas,
         'adelanto': adelanto,
         'total_horas': total_horas / 3600,  # Convertir segundos a horas
@@ -43,7 +41,7 @@ def view_home(request):
     })
 
 
-
+@login_required
 def horas_detail(request):
     if request.method == 'POST':
         form = HorasForm(request.POST)
@@ -68,7 +66,7 @@ def horas_detail(request):
 
     return render(request, 'horas/horas_detail.html', {'form': form})
 
-
+@login_required
 def adelanto_detail(request):
     if request.method == 'POST':
         form = AdelantoForm(request.POST)
