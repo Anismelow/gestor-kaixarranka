@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-nz7l2c2avtcj@1ro#m=^m5zhhze+nloodje)6r1ebmlfzbh(8-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = []
 
 
 
@@ -72,7 +72,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'gestorhorario.wsgi.application'
 
 from decouple import config
-import os
 
 
 # Database
@@ -126,9 +125,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
