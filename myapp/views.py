@@ -90,3 +90,21 @@ def adelanto_detail(request):
 def cerrar_sesion(request):
     logout(request)  # Cerrar la sesión del usuario
     return redirect('login')  # Redirigir a la vista de inicio de sesión
+
+
+# views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Auto-login the user after registration
+            return redirect('home')  # Redirect to a success page
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
