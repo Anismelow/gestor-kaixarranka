@@ -1,3 +1,4 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required,user_passes_test
@@ -108,29 +109,20 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-from dataclasses import dataclass
 
 
-@dataclass
-class TrabajadorData:
-    username: str
-    fecha: str
-    hora_entrada: str
-    hora_salida: str
-    horas_laboradas: float
-    horas_totales: float
-    adelanto: float
-    total_adelanto: float
-    euros: float
 
 
+@login_required
 def admin_login(request):
-    trabajadores = User.objects.filter(is_staff=False)  # Obtener usuarios que no son staff
+    if not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para acceder a esta página.")
     
+    trabajadores = User.objects.filter(is_staff=False)  # Obtener usuarios que no son staff
     datos_trabajadores = []
 
     for trabajador in trabajadores:
-        horas = Horas.objects.filter(usuario=trabajador)
+        horas = Horas.objects.filter(usuario=trabajador).order_by('fecha')
         adelantos = Adelanto.objects.filter(usuario=trabajador)
         
         total_horas = sum(hora.horas_laboradas.total_seconds() for hora in horas) / 3600
@@ -145,7 +137,7 @@ def admin_login(request):
             'total_adelanto': total_adelanto,
             'euros': euros,
         })
-    
+
     return render(request, 'panel.html', {
         'datos_trabajadores': datos_trabajadores,
     })

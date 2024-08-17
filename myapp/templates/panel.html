@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load custom_filters %}
-
-
 {% block content %}
+
     <div class="container mt-4">
+        <a class=" btn btn-danger mb-5" href="{% url 'logout' %}">Logout</a>
+
         {% for datos in datos_trabajadores %}
             <div class="card mb-4">
                 <div class="card-header">
