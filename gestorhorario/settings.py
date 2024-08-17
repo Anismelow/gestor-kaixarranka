@@ -138,3 +138,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'  # Cambia esto a la URL de tu página de inicio de sesión
+
+
+CSRF_TRUSTED_ORIGINS = ['*']
