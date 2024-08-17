@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 
 from .forms import *
 from .models import Horas, Adelanto
@@ -13,14 +13,16 @@ def inicio_sesion(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            return redirect('home')  # Redirige a la página de inicio o la página que desees
+            if user.is_staff:
+                return redirect('panel')  # Redirige al panel de administración si es staff
+            else:
+                login(request, user)
+                return redirect('home')  # Redirige a la página de inicio u otra página
         else:
             error = "Nombre de usuario o contraseña incorrectos"
             return render(request, 'login.html', {'error': error})
     
     return render(request, 'login.html')
-
 @login_required
 def view_home(request):
     # Filtrar las instancias de Horas y Adelanto para el usuario autenticado
@@ -93,11 +95,6 @@ def cerrar_sesion(request):
 
 
 # views.py
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
-
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -109,3 +106,46 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'register.html', {'form': form})
+
+
+from dataclasses import dataclass
+
+
+@dataclass
+class TrabajadorData:
+    username: str
+    fecha: str
+    hora_entrada: str
+    hora_salida: str
+    horas_laboradas: float
+    horas_totales: float
+    adelanto: float
+    total_adelanto: float
+    euros: float
+
+
+def admin_login(request):
+    trabajadores = User.objects.filter(is_staff=False)  # Obtener usuarios que no son staff
+    
+    datos_trabajadores = []
+
+    for trabajador in trabajadores:
+        horas = Horas.objects.filter(usuario=trabajador)
+        adelantos = Adelanto.objects.filter(usuario=trabajador)
+        
+        total_horas = sum(hora.horas_laboradas.total_seconds() for hora in horas) / 3600
+        total_adelanto = sum(adelanto.monto for adelanto in adelantos)
+    
+        euros = total_horas * 8.125  # Calcula el total de euros
+        
+        datos_trabajadores.append({
+            'username': trabajador.username,
+            'horas': horas,
+            'total_horas': total_horas,
+            'total_adelanto': total_adelanto,
+            'euros': euros,
+        })
+    
+    return render(request, 'panel.html', {
+        'datos_trabajadores': datos_trabajadores,
+    })
