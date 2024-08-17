@@ -107,4 +107,5 @@ def register(request):
             return redirect('home')  # Redirect to a success page
     else:
         form = UserCreationForm()
+
     return render(request, 'register.html', {'form': form})
