@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import *
+from django.contrib.auth.models import User
+
 
 # Register your models here.
 
@@ -17,3 +19,7 @@ class AdelantoAdmin(admin.ModelAdmin):
     list_filter = ('usuario','fecha_solicitud')
     search_fields = ('usuario','fecha')
 
+
+
+user = User.objects.get(username='beatriz' or 'admin')
+print(user.is_staff)  # Debería imprimir True

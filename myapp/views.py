@@ -14,35 +14,33 @@ def inicio_sesion(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            login(request, user)
             if user.is_staff:
                 return redirect('panel')  # Redirige al panel de administración si es staff
             else:
-                login(request, user)
                 return redirect('home')  # Redirige a la página de inicio u otra página
         else:
             error = "Nombre de usuario o contraseña incorrectos"
             return render(request, 'login.html', {'error': error})
     
     return render(request, 'login.html')
+
+
 @login_required
 def view_home(request):
-    # Filtrar las instancias de Horas y Adelanto para el usuario autenticado
     horas = Horas.objects.filter(usuario=request.user)
     adelanto = Adelanto.objects.filter(usuario=request.user)
     
-    # Calcular los totales
     total_horas = sum(h.horas_laboradas.total_seconds() for h in horas)
     total_adelanto = sum(a.monto for a in adelanto)
-
 
     return render(request, 'index.html', {
         'horas': horas,
         'adelanto': adelanto,
         'total_horas': total_horas / 3600,  # Convertir segundos a horas
         'total_adelanto': total_adelanto,
-        'euros':total_horas / 3600 * 8.125
+        'euros': total_horas / 3600 * 8.125
     })
-
 
 @login_required
 def horas_detail(request):
@@ -53,19 +51,16 @@ def horas_detail(request):
             hora_entrada = form.cleaned_data['hora_entrada']
             hora_salida = form.cleaned_data['hora_salida']
 
-            # Crear una instancia del modelo Horas y guardarla
             horas = Horas(
-                usuario=request.user,  # Asignar el usuario actual
+                usuario=request.user,
                 fecha=fecha,
                 hora_entrada=hora_entrada,
                 hora_salida=hora_salida
             )
-            horas.save()  # Guardar la instancia en la base de datos
-
-            return redirect('home')  # Redirigir a la vista 'home'
-
+            horas.save()
+            return redirect('home')
     else:
-        form = HorasForm()  # Mostrar un formulario vacío si la solicitud no es POST
+        form = HorasForm()
 
     return render(request, 'horas/horas_detail.html', {'form': form})
 
@@ -117,8 +112,8 @@ def register(request):
 def admin_login(request):
     if not request.user.is_staff:
         return HttpResponseForbidden("No tienes permiso para acceder a esta página.")
-    
-    trabajadores = User.objects.filter(is_staff=False)  # Obtener usuarios que no son staff
+
+    trabajadores = User.objects.filter(is_staff=False)
     datos_trabajadores = []
 
     for trabajador in trabajadores:
@@ -128,7 +123,7 @@ def admin_login(request):
         total_horas = sum(hora.horas_laboradas.total_seconds() for hora in horas) / 3600
         total_adelanto = sum(adelanto.monto for adelanto in adelantos)
     
-        euros = total_horas * 8.125  # Calcula el total de euros
+        euros = total_horas * 8.125
         
         datos_trabajadores.append({
             'username': trabajador.username,
