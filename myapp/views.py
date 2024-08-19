@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login,logout
@@ -35,13 +36,15 @@ def view_home(request):
     
     total_horas = sum(h.horas_laboradas.total_seconds() for h in horas)
     total_adelanto = sum(a.monto for a in adelanto)
-
+    total_adelanto = float(total_adelanto)
+    total_euros_menos_adelanto = round(total_horas / 3600 * 8.125 - total_adelanto, 2)
     return render(request, 'index.html', {
         'horas': horas,
         'adelanto': adelanto,
         'total_horas': total_horas / 3600,  # Convertir segundos a horas
         'total_adelanto': total_adelanto,
-        'euros': total_horas / 3600 * 8.125
+        'euros': total_horas / 3600 * 8.125,
+        'euros_menos_adelanto': total_euros_menos_adelanto
     })
 
 @login_required
