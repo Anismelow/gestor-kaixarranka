@@ -32,7 +32,7 @@ def inicio_sesion(request):
 @login_required
 def view_home(request):
     horas = Horas.objects.filter(usuario=request.user).order_by('fecha')
-    adelanto = Adelanto.objects.filter(usuario=request.user).order_by('fecha')
+    adelanto = Adelanto.objects.filter(usuario=request.user).order_by('fecha_solicitud')
     
     total_horas = sum(h.horas_laboradas.total_seconds() for h in horas)
     total_adelanto = sum(a.monto for a in adelanto)
