@@ -152,6 +152,18 @@ def eliminar_horas(request, id):
 
     return redirect('home')
 
+def eliminar_adelanto(request, id):
+    try:
+        adelanto = Adelanto.objects.get(id=id)
+        adelanto.delete()
+        messages.success(request, 'Eliminado exitosamente.')
+    except Adelanto.DoesNotExist:
+        messages.error(request, 'El objeto no existe.')
+    except Exception as e:
+        messages.error(request, f'Ocurrió un error: {str(e)}')
+
+    return redirect('home')
+
 
 
 def editar_horas(request, id):
