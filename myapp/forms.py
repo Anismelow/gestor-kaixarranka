@@ -19,8 +19,15 @@ class AdelantoForm(forms.ModelForm):
         fields = ['fecha_solicitud', 'monto']
         widgets = {
             'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
-            'monto': forms.NumberInput(attrs={'type': 'number'}),
+            'monto': forms.NumberInput(attrs={'type': 'number', 'min': '0'}),
+            
         }
+
+    def clean_monto(self):
+        monto = self.cleaned_data.get('monto')
+        if monto is not None and monto < 0:
+            raise forms.ValidationError('El monto no puede ser negativo.')
+        return monto
 
 
 
