@@ -9,6 +9,9 @@ urlpatterns = [
     path('logout/', cerrar_sesion, name='logout'),
     path('register/', register, name='register'),
     path('panel/', admin_login, name='panel'),
+    path('eliminar/<int:id>/', eliminar_horas, name='eliminar'),
+    path('editar/<int:id>/', editar_horas, name='editar'),
+
 
 
 ]

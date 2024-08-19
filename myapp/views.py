@@ -1,7 +1,9 @@
 from django.http import HttpResponseForbidden
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login,logout
-from django.contrib.auth.decorators import login_required,user_passes_test
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 
 from .forms import *
 from .models import Horas, Adelanto
@@ -16,9 +18,9 @@ def inicio_sesion(request):
         if user is not None:
             login(request, user)
             if user.is_staff:
-                return redirect('panel')  # Redirige al panel de administración si es staff
+                return redirect('panel') 
             else:
-                return redirect('home')  # Redirige a la página de inicio u otra página
+                return redirect('home')  
         else:
             error = "Nombre de usuario o contraseña incorrectos"
             return render(request, 'login.html', {'error': error})
@@ -77,17 +79,17 @@ def adelanto_detail(request):
                 fecha_solicitud=fecha,
                 monto=monto
             )
-            adelanto.save()  # Guardar la instancia en la base de datos
-            return redirect('home')  # Redirigir a la vista 'home'
+            adelanto.save()  
+            return redirect('home')  
     else:
-        form = AdelantoForm()  # Mostrar un formulario vacío si la solicitud no es POST
+        form = AdelantoForm()  
     return render(request, 'adelanto/adelanto_detail.html', {'form': form})
 
 
 
 def cerrar_sesion(request):
-    logout(request)  # Cerrar la sesión del usuario
-    return redirect('login')  # Redirigir a la vista de inicio de sesión
+    logout(request) 
+    return redirect('login') 
 
 
 # views.py
@@ -96,8 +98,8 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Auto-login the user after registration
-            return redirect('home')  # Redirect to a success page
+            login(request, user)  
+            return redirect('home')  
     else:
         form = UserCreationForm()
 
@@ -136,3 +138,33 @@ def admin_login(request):
     return render(request, 'panel.html', {
         'datos_trabajadores': datos_trabajadores,
     })
+
+
+def eliminar_horas(request, id):
+    try:
+        horas = Horas.objects.get(id=id)
+        horas.delete()
+        messages.success(request, 'Eliminado exitosamente.')
+    except Horas.DoesNotExist:
+        messages.error(request, 'El objeto no existe.')
+    except Exception as e:
+        messages.error(request, f'Ocurrió un error: {str(e)}')
+
+    return redirect('home')
+
+
+
+def editar_horas(request, id):
+    horas = get_object_or_404(Horas, id=id)
+
+    if request.method == 'POST':
+        form = HorasForm(request.POST, instance=horas)
+        if form.is_valid():
+            form.save()
+            # Mensaje de éxito opcional
+            messages.success(request, 'Actualizado exitosamente.')
+            return redirect('home')
+    else:
+        form = HorasForm(instance=horas)
+
+    return render(request, 'horas/edit_horas.html', {'form': form})

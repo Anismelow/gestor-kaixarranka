@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
-import dj_database_url
 import os
+from dotenv import load_dotenv
 
 
 
@@ -82,19 +82,18 @@ WSGI_APPLICATION = 'gestorhorario.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+load_dotenv()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'zeabur',
-        'USER': 'root',
-        'PASSWORD': '6cA8vKX1btIpUL2hPEW7fSZ4wFn3590u',
-        'HOST': 'fra1.clusters.zeabur.com',
-        'PORT': '31356',
-
+        'ENGINE': os.getenv('DATABASE_ENGINE'),
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
-
-    }
-
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
