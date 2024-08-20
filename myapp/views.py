@@ -96,18 +96,24 @@ def cerrar_sesion(request):
 
 
 # views.py
+@login_required
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  
-            return redirect('home')  
+        # Verifica si el usuario actual es miembro del staff
+        if request.user.is_staff:
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                login(request, user)  # Inicia sesión automáticamente con el nuevo usuario
+                messages.success(request, 'Usuario registrado y conectado exitosamente.')
+                return redirect('home')
+        else:
+            messages.error(request, 'No tienes permiso para registrar nuevos usuarios.')
+            return redirect('home')  # Vuelve a la página principal
     else:
         form = UserCreationForm()
 
     return render(request, 'register.html', {'form': form})
-
 
 
 
